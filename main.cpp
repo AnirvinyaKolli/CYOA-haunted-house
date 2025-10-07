@@ -1,23 +1,16 @@
+#include "text_formating.h"
 #include <iostream> 
 #include <string> 
 #include <fstream> 
 using namespace std;
 
-    
-string formatTextFile(string url){
-    ifstream inputFile(url); 
-    string output = ""; 
-    string line; 
-    while (getline(inputFile, line)) {
-        output += (line + '\n'); 
-    }
-    return output;
-}
-
 
 int main()
 {
-    string formattedText = formatTextFile("ghost.txt");
+    TextFormatter formatter;
+    string ws; 
+    string formattedText = formatter.formatTextFile("ASCII_ART/ghost.txt");
     cout << formattedText;
+    cin >> ws;
     return 0;
 }

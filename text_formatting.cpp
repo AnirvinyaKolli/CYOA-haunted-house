@@ -1,10 +1,10 @@
-#include <iostream> 
 #include <string> 
 #include <fstream> 
+#include "text_formating.h"
+
 using namespace std;
 
-    
-string formatTextFile(string url){
+string TextFormatter::formatTextFile(std::string url){
     ifstream inputFile(url); 
     string output = ""; 
     string line;
