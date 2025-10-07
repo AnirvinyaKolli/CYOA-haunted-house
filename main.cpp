@@ -17,5 +17,7 @@ string formatTextFile(string url){
 
 int main()
 {
+    string formattedText = formatTextFile("ghost.txt");
+    cout << formattedText;
     return 0;
 }
