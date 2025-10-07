@@ -4,11 +4,11 @@
 
 using namespace std;
 
-string TextFormatter::formatTextFile(std::string url){
+string TextFormatter::formatTextFile(string url){
     ifstream inputFile(url); 
     string output = ""; 
     string line;
-    while (std::getline(inputFile, line)) {
+    while (getline(inputFile, line)) {
         output += (line + '\n'); 
     }
     return output;

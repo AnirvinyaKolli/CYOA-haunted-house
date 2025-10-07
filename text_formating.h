@@ -1,6 +1,6 @@
 #include <string>
-
+using namespace std;
 class TextFormatter {
     public:
-    std::string formatTextFile(std::string url);
+    string formatTextFile(string url);
 };
