@@ -20,6 +20,13 @@ string formatTextFile(std::string url){
 class DecisionPoint {
     public: vector<DecisionPoint> choices; 
     public: string prompt;
+    public: int artIndex; 
+
+    public: DecisionPoint(string prompt, vector<DecisionPoint> choices, int art) {
+        this->prompt = prompt;
+        this->choices = choices;
+
+    }
 
     public: DecisionPoint(string prompt, vector<DecisionPoint> choices) {
         this->prompt = prompt;
