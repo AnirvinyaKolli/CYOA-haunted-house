@@ -5,11 +5,14 @@
 #include <fstream>
 using namespace std;
 
-string formatTextFile(std::string url){
+
+vector<string> art;
+
+string formatTextFile(string url){
     ifstream inputFile(url); 
     string output = ""; 
     string line;
-    while (std::getline(inputFile, line)) {
+    while (getline(inputFile, line)) {
         output += (line + '\n'); 
     }
     return output;
@@ -18,36 +21,50 @@ string formatTextFile(std::string url){
 
 
 class DecisionPoint {
-    public: vector<DecisionPoint> choices; 
+    public: vector<DecisionPoint> choices;
     public: string prompt;
+    public: vector<string> choicePrompts;
     public: int artIndex; 
 
-    public: DecisionPoint(string prompt, vector<DecisionPoint> choices, int art) {
+    public: DecisionPoint(string prompt, vector<DecisionPoint> choices, vector<string> choicePrompts, int artIndex) {
         this->prompt = prompt;
         this->choices = choices;
-
+        this->choicePrompts = choicePrompts;
+        this->artIndex = artIndex;
     }
-
-    public: DecisionPoint(string prompt, vector<DecisionPoint> choices) {
+    public: DecisionPoint(string prompt, int artIndex) {
         this->prompt = prompt;
-        this->choices = choices;
+        this->choices = vector<DecisionPoint>();
+        this->choicePrompts = vector<string>();
+        this->artIndex = artIndex;
     }
-
+    
     public: DecisionPoint(string prompt) {
         this->prompt = prompt;
         this->choices = vector<DecisionPoint>();
+        this->choicePrompts = vector<string>();
+        this->artIndex = 0;
     }
 
     public: DecisionPoint() {
         this->prompt = "default prompt";
         this->choices = vector<DecisionPoint>();
+        this->choicePrompts = vector<string>();
+        this->artIndex = 0;
     }
 
     public:
     virtual void makeDecision() {
         int userInput;
+        cout << art[artIndex] << endl;
+        cout << "----------------------------------" << endl;
         cout << prompt << endl;
+        for (int i = 0; i < choices.size(); i++) {
+            cout << i+1 << ": " << choicePrompts[i] << endl;
+        }
+
         cin >> userInput;
+        userInput -= 1;
 
         switch(choices.size()){
             case 0:
@@ -97,6 +114,7 @@ class DialogueNode {
             cout << responses[userInput] << endl;
             return convincingValues[userInput];
         }
+        return 0.0; 
     }
     
 };
@@ -147,22 +165,59 @@ i.e die or live
 
 int main()
 {
-    vector<DecisionPoint> choices = {
-        DecisionPoint("You have convinced the ghost to let you pass. You win!"),
-        DecisionPoint("The ghost is not convinced. You lose!")
-    };
-    vector<DialogueNode> dialogues = {
-        DialogueNode("Am I fat?", {"Yea", "Nah"}, {-1.0, 1.0}, {"How dare you!", "Knew it!"}),
-        DialogueNode("Do you like my hat?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"}),
-        DialogueNode("Do you think I'm scary?", {"Yea", "Nah"}, {1.0, -1.0}, {"Boo!", "Oh."})
-    };
+    //formatting ascii art 
+    vector<string> urls = {"ASCII_ART/boobytrap.txt","ASCII_ART/cave.txt","ASCII_ART/ghost.txt", "ASCII_ART/halberd.txt", "ASCII_ART/temple_entrance.txt"}; 
 
-    DialogueGame game("Start", dialogues, choices);
+    for (string url : urls){
+        art.push_back(formatTextFile(url)); 
+    }
 
-    string formattedText = formatTextFile("ASCII_ART/ghost.txt");
+    //Right path
+    DecisionPoint endWin1("You have convinced the ghost to let you pass. You win!", 2); //Edit content
+    DecisionPoint attackGhostGluttonEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 0);
+    DecisionPoint failGhostGluttonDialogueEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 0);
+    DecisionPoint sneakGhostGluttonEnding("You try to sneak past the ghost. You make it! The hallway behind him is a dead end he sneaks up behind you and eats you", 0);
+    DialogueGame ghostGluttonCommunication(
+        "You speak with the ghost. What do you say?",
+        {
+            DialogueNode("Do you want some food?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"}),
+            DialogueNode("Are you hungry?", {"Yea", "Nah"}, {1.0, -1.0}, {"Boo!", "Oh."}),
+            DialogueNode("Do you like my hat?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"})
+        },
+        {endWin1, failGhostGluttonDialogueEnding}
+    );
+    DecisionPoint ghostGluttonEncounter("You have encountered a ghostly glutton blocking your path.", {ghostGluttonCommunication, attackGhostGluttonEnding, sneakGhostGluttonEnding}, {"Try to communicate", "Attack the ghost", "Sneak past the ghost"}, 2);
 
-    game.makeDecision();
+    //Left path
+    DecisionPoint endWin2("You win the fight. You have found the treasure! You win!", 3);
+    DecisionPoint attackWithKnifeEnding("You try to attack the halberd-wielding ghost with your gleaming and cool knife. It is unimpressed. It kills you.", 0);
+    DecisionPoint talkToHalberdGhost("He says: \" Ya the dude in the other room is kinda odd; compliment him and he'll let you win no prob\"", {ghostGluttonEncounter}, {"Go to the next room?"}, 0);
+    DecisionPoint halberdGhostEncounter("You have encountered a ghost wielding a halberd blocking your path.", {endWin2, attackWithKnifeEnding, talkToHalberdGhost}, {"Try and suck the ghosts with a vacuum", "Attack the ghost with your knife", "Talk to the ghost"}, 4);
+
+    //Path decision 
+    DecisionPoint EmmanuelChosenPath("Emmanuel leads you to the house through a back entrance. He leaves you to explore. There are two paths ahead of you.", {halberdGhostEncounter, ghostGluttonEncounter}, {"Take the left path", "Take the right path"}, 1);
+    DecisionPoint FlitchChosenEnding("You follow Flitch to the front entrance of the house. You enter and are immediately pincushioned by an arrow trap. You die.", 0);
+
+    DecisionPoint start("You are standing outside a spooky house. Your friend Emmanuel and your rival Flitch are with you. Who do you follow?", {EmmanuelChosenPath, FlitchChosenEnding}, {"Follow Emmanuel", "Follow Flitch"}, 0);
+    //TESTING!
+    start.makeDecision();
+    //TESTING! 
+    // vector<DecisionPoint> choices = {
+    //     DecisionPoint("You have convinced the ghost to let you pass. You win!", 2),
+    //     DecisionPoint("The ghost is not convinced. You lose!", 0)
+    // };
+    // vector<DialogueNode> dialogues = {
+    //     DialogueNode("Am I fat?", {"Yea", "Nah"}, {-1.0, 1.0}, {"How dare you!", "Knew it!"}),
+    //     DialogueNode("Do you like my hat?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"}),
+    //     DialogueNode("Do you think I'm scary?", {"Yea", "Nah"}, {1.0, -1.0}, {"Boo!", "Oh."})
+    // };
+
+    // DialogueGame game("Start", dialogues, choices);
+
+    // string formattedText = formatTextFile("ASCII_ART/ghost.txt");
+
+    // game.makeDecision();
     
-    cout << formattedText;
+    // cout << formattedText;
     return 0;
 }
