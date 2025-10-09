@@ -86,64 +86,7 @@ class DecisionPoint {
     }
 }; 
 
-class DialogueNode {
-    public: string prompt;
-    public: vector<string> choices;
-    public: vector<float> convincingValues;
-    public: vector<string> responses;
 
-    public:
-    DialogueNode(string prompt, vector<string> choices, vector<float> convincingValues, vector<string> responses) {
-        this->prompt = prompt;
-        this->choices = choices;
-        this->convincingValues = convincingValues;
-        this->responses = responses;
-    }
-    public: float displayDialogue() {
-        cout << prompt << endl;
-        for (int i = 0; i < choices.size(); i++) {
-            cout << i+1 << ": " << choices[i] << endl;
-        }
-        int userInput;
-        cin >> userInput;
-        userInput -= 1; 
-        if (userInput < 0 || userInput >= choices.size()) {
-            cout << "Invalid choice. Please try again." << endl;
-            displayDialogue();
-        } else {
-            cout << responses[userInput] << endl;
-            return convincingValues[userInput];
-        }
-        return 0.0; 
-    }
-    
-};
-
-class DialogueGame : public DecisionPoint {
-
-    public: vector<DialogueNode> dialogues;
-    public: DialogueGame(string start, vector<DialogueNode> nodes, vector<DecisionPoint> choices)  {
-        this->prompt = start;
-        this->dialogues = nodes;
-        this->choices = choices;
-    }
-
-    void makeDecision() override {
-        cout << prompt << endl;
-        float totalConvincingValue = 0.0;
-
-        for (DialogueNode node : dialogues) {
-            totalConvincingValue += node.displayDialogue();
-        }
-
-        if (totalConvincingValue > 0.0) {
-            choices[0].makeDecision();
-        } else {
-            choices[1].makeDecision();
-        }
-
-    }
-};
 
 
 /*
@@ -177,15 +120,7 @@ int main()
     DecisionPoint attackGhostGluttonEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 0);
     DecisionPoint failGhostGluttonDialogueEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 0);
     DecisionPoint sneakGhostGluttonEnding("You try to sneak past the ghost. You make it! The hallway behind him is a dead end he sneaks up behind you and eats you", 0);
-    DialogueGame ghostGluttonCommunication(
-        "You speak with the ghost. What do you say?",
-        {
-            DialogueNode("Do you want some food?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"}),
-            DialogueNode("Are you hungry?", {"Yea", "Nah"}, {1.0, -1.0}, {"Boo!", "Oh."}),
-            DialogueNode("Do you like my hat?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"})
-        },
-        {endWin1, failGhostGluttonDialogueEnding}
-    );
+    DecisionPoint ghostGluttonCommunication("You speak with the ghost. He asks you wether you think he is fat.", {endWin1, failGhostGluttonDialogueEnding}, {"You are not obese", "You totally are fat"}, 0);
     DecisionPoint ghostGluttonEncounter("You have encountered a ghostly glutton blocking your path.", {ghostGluttonCommunication, attackGhostGluttonEnding, sneakGhostGluttonEnding}, {"Try to communicate", "Attack the ghost", "Sneak past the ghost"}, 2);
 
     //Left path
@@ -199,25 +134,7 @@ int main()
     DecisionPoint FlitchChosenEnding("You follow Flitch to the front entrance of the house. You enter and are immediately pincushioned by an arrow trap. You die.", 0);
 
     DecisionPoint start("You are standing outside a spooky house. Your friend Emmanuel and your rival Flitch are with you. Who do you follow?", {EmmanuelChosenPath, FlitchChosenEnding}, {"Follow Emmanuel", "Follow Flitch"}, 0);
-    //TESTING!
     start.makeDecision();
-    //TESTING! 
-    // vector<DecisionPoint> choices = {
-    //     DecisionPoint("You have convinced the ghost to let you pass. You win!", 2),
-    //     DecisionPoint("The ghost is not convinced. You lose!", 0)
-    // };
-    // vector<DialogueNode> dialogues = {
-    //     DialogueNode("Am I fat?", {"Yea", "Nah"}, {-1.0, 1.0}, {"How dare you!", "Knew it!"}),
-    //     DialogueNode("Do you like my hat?", {"Yea", "Nah"}, {1.0, -1.0}, {"Thanks!", "Rude!"}),
-    //     DialogueNode("Do you think I'm scary?", {"Yea", "Nah"}, {1.0, -1.0}, {"Boo!", "Oh."})
-    // };
-
-    // DialogueGame game("Start", dialogues, choices);
-
-    // string formattedText = formatTextFile("ASCII_ART/ghost.txt");
-
-    // game.makeDecision();
     
-    // cout << formattedText;
     return 0;
 }
