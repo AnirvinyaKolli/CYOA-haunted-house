@@ -1,12 +1,20 @@
+/* 
+Sai Anirvinya Kolli & Gurusaran Satish 
+CYOA Haunted House
+Date: 10/12/25
+Extra: Vectors, Reading from text files, Classes
+*/
+
 #include <iostream> 
 #include <string> 
 #include <vector>
 #include <fstream>
 using namespace std;
 
-
+// Global ascii art storage
 vector<string> art;
 
+// Function to read and format text file content
 string formatTextFile(string url){
     ifstream inputFile(url); 
     string output = ""; 
@@ -18,13 +26,15 @@ string formatTextFile(string url){
 }
 
 
-
+// DecisionPoint class definition
 class DecisionPoint {
     public: vector<DecisionPoint> choices;
     public: string prompt;
     public: vector<string> choicePrompts;
     public: int artIndex; 
 
+
+    //Constructors
     public: DecisionPoint(string prompt, vector<DecisionPoint> choices, vector<string> choicePrompts, int artIndex) {
         this->prompt = prompt;
         this->choices = choices;
@@ -52,8 +62,11 @@ class DecisionPoint {
         this->artIndex = 0;
     }
 
+    // Method to display prompt and handle user input
     public:
     virtual void makeDecision() {
+
+        //Displauy prompt and choices
         int userInput;
         cout << art[artIndex] << endl;
         cout << "----------------------------------" << endl;
@@ -62,9 +75,11 @@ class DecisionPoint {
             cout << i+1 << ": " << choicePrompts[i] << endl;
         }
 
+        //Get user input
         cin >> userInput;
         userInput -= 1;
 
+        //Handle user input
         switch(choices.size()){
             case 0:
                 cout << "The end" << endl;
@@ -76,8 +91,10 @@ class DecisionPoint {
             default:
                 if (userInput < 0 || userInput >= choices.size()) {
                     cout << "Invalid choice. Please try again." << endl;
+                    //Recalls the makeDecision method if the user input is invalid
                     makeDecision();
                 } else {
+                    //Calls the next decision point's makeDecision method
                     choices[userInput].makeDecision();
                 }
                 break;
@@ -85,25 +102,6 @@ class DecisionPoint {
     }
 }; 
 
-
-
-
-/*
- dialogue game class?
-You like get a prompt and a list of choices
-and each choice is like a convincing value,
-and the guy gives a response
-and at the end of like 4 dialogues you get a result
-*/
-
-/*
-class: dialogue game extends decision point?  <so it can replace the end points> 
-list of dialogue nodes
-loops through dialogue nodes
-each dialogue node returns a float
-the floats are summed and based on that sum you get a result
-i.e die or live 
-*/
 
 int main()
 {
