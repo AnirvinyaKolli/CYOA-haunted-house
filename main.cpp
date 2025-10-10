@@ -1,4 +1,3 @@
-// #include "text_formating.h"
 #include <iostream> 
 #include <string> 
 #include <vector>
@@ -108,8 +107,9 @@ i.e die or live
 
 int main()
 {
+    //Emojicombos.com
     //formatting ascii art 
-    vector<string> urls = { "ASCII_ART/boobytrap.txt","ASCII_ART/imperial_staircase.txt","ASCII_ART/ghost.txt", "ASCII_ART/halberd.txt", "ASCII_ART/gold_pile.txt", "ASCII_ART/mansion.txt"}; 
+    vector<string> urls = { "ASCII_ART/boobytrap.txt","ASCII_ART/imperial-staircase.txt","ASCII_ART/ghost.txt", "ASCII_ART/halberd.txt", "ASCII_ART/gold_pile.txt", "ASCII_ART/mansion.txt"}; 
 
     for (string url : urls){
         art.push_back(formatTextFile(url)); 
@@ -118,16 +118,16 @@ int main()
     //Right path
     DecisionPoint endWin1("You have convinced the ghost to let you pass. You win!", 4); //Edit content
     DecisionPoint attackGhostGluttonEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 2);
-    DecisionPoint failGhostGluttonDialogueEnding("You try to attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 2);
+    DecisionPoint failGhostGluttonDialogueEnding("You verbally attack the ghost. You're not sure why you've chosen this option. The ghost is not impressed. He eats you", 2);
     DecisionPoint sneakGhostGluttonEnding("You try to sneak past the ghost. You make it! The hallway behind him is a dead end he sneaks up behind you and eats you", 2);
     DecisionPoint ghostGluttonCommunication("You speak with the ghost. He asks you whether you think he is fat.", {endWin1, failGhostGluttonDialogueEnding}, {"You are not obese", "You totally are fat"}, 2);
     DecisionPoint ghostGluttonEncounter("You have encountered a ghostly glutton blocking your path.", {ghostGluttonCommunication, attackGhostGluttonEnding, sneakGhostGluttonEnding}, {"Try to communicate", "Attack the ghost", "Sneak past the ghost"}, 2);
 
     //Left path
     DecisionPoint endWin2("You win the fight. You have found the treasure! You win!", 4);
-    DecisionPoint attackWithKnifeEnding("You try to attack the halberd-wielding ghost with your gleaming and cool knife. It is unimpressed. It kills you.", 0);
-    DecisionPoint talkToHalberdGhost("He says: \" Ya the dude in the other room is kinda odd; compliment him and he'll let you win no prob\"", {ghostGluttonEncounter}, {"Go to the next room?"}, 0);
-    DecisionPoint halberdGhostEncounter("You have encountered a ghost wielding a halberd blocking your path.", {endWin2, attackWithKnifeEnding, talkToHalberdGhost}, {"Try and suck the ghosts with a vacuum", "Attack the ghost with your knife", "Talk to the ghost"}, 4);
+    DecisionPoint attackWithKnifeEnding("You try to attack the halberd-wielding ghost with your gleaming and cool knife. It is unimpressed. It kills you.", 3);
+    DecisionPoint talkToHalberdGhost("He says: \" Ya the dude in the other room is kinda odd; compliment him and he'll let you win no prob\"", {ghostGluttonEncounter}, {"Go to the next room?"}, 3);
+    DecisionPoint halberdGhostEncounter("You have encountered a ghost wielding a halberd blocking your path.", {endWin2, attackWithKnifeEnding, talkToHalberdGhost}, {"Try and suck the ghosts with a vacuum", "Attack the ghost with your knife", "Talk to the ghost"}, 3);
 
     //Path decision 
     DecisionPoint EmmanuelChosenPath("Emmanuel leads you to the house through a back entrance. He leaves you to explore. There are two paths ahead of you.", {halberdGhostEncounter, ghostGluttonEncounter}, {"Take the left path", "Take the right path"}, 1);
